@@ -39,7 +39,6 @@ const Statistiikka = (props) => {
             </div>
         )
     }
-    
 }
 class App extends React.Component {
     constructor(props) {
@@ -61,7 +60,8 @@ class App extends React.Component {
                 [nimi]: this.state[nimi] +1
             })
         }
-    }
+	}
+	
     render() {
         return (
             <div>
@@ -73,7 +73,6 @@ class App extends React.Component {
             </div>
         )
     }
-    
 }
 
 ReactDOM.render(<App />, document.getElementById('root'))

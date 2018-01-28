@@ -53,35 +53,12 @@ class App extends React.Component {
         }
     }
 
-    clickHyva = () => {
-        this.setState({
-            hyvä: this.state.hyvä +1,
-            yhteensä: this.state.yhteensä +1,
-            summa: this.state.summa +1
-        })
-    }
-    
-    clickNeutraali = () => {
-        this.setState({
-            neutraali: this.state.neutraali +1,
-            yhteensä: this.state.yhteensä +1
-        })
-    }
-
-    clickHuono = () => {
-        this.setState({
-            huono: this.state.huono +1,
-            yhteensä: this.state.yhteensä +1,
-            summa: this.state.summa -1
-        })
-    }
-
     klikkiKasittelija = (nimi, arvo) => {
         return () => {
             this.setState({
                 yhteensä: this.state.yhteensä +1,
                 summa: this.state.summa + arvo,
-                
+                [nimi]: this.state[nimi] +1
             })
         }
     }

@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from 'axios'
+import personService from './services/persons'
 
 class App extends React.Component {
   constructor(props) {
@@ -13,10 +14,10 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        this.setState({ persons: response.data})
+        this.setState({ persons: response})
       })
   }
 
@@ -25,20 +26,34 @@ class App extends React.Component {
     const names = this.state.persons.map(name => name.name)
 
     if (names.includes(this.state.newName)) {
-      alert('Nimi löytyy jo puhelinluettelosta!')
+      const message = this.state.newName.concat(' on jo luettelossa, korvataanko vanha numero uudella?')
+      if (window.confirm(message)) {
+        const id = this.state.persons.filter(person => person.name === this.state.newName)[0].id
+        const personObj = {
+          name: this.state.newName,
+          number: this.state.newNumber
+        }
+        personService
+          .update(id, personObj)
+          .then(response => {
+            this.setState({ persons: this.state.persons.concat(response)})
+          })
+      }
     } else {
       const personObj = {
         name: this.state.newName,
         number: this.state.newNumber
       }
-  
-      const persons = this.state.persons.concat(personObj)
-  
-      this.setState({
-        persons: persons,
-        newName: '',
-        newNumber: ''
-      })
+      
+      personService
+        .create(personObj)
+        .then(response => {
+          this.setState({
+            persons: this.state.persons.concat(personObj),
+            newName: '',
+            newNumber: ''
+          })
+        })
     }
   }
 
@@ -55,7 +70,20 @@ class App extends React.Component {
   }
 
   Person = (props) => {
-    const Show = () => <li>{props.person.name} {props.person.number}</li>
+    const deletePerson = () => {
+      const text = 'poistetaanko '.concat(props.person.name)
+      if (window.confirm(text)) {
+        const url = 'http://localhost:3001/persons/'.concat(props.person.id)
+      const copy = this.state.persons.filter(person => person.id !== props.person.id)
+      axios.delete(url)
+      .then(response => {
+        this.setState({ persons: copy})
+      })
+      }
+      
+    }
+
+    const Show = () => <li>{props.person.name} {props.person.number} <button onClick={deletePerson}>poista</button></li>
 
     return (
       <div>

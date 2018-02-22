@@ -28,15 +28,20 @@ class App extends React.Component {
     if (names.includes(this.state.newName)) {
       const message = this.state.newName.concat(' on jo luettelossa, korvataanko vanha numero uudella?')
       if (window.confirm(message)) {
-        const id = this.state.persons.filter(person => person.name === this.state.newName)[0].id
+        const person = this.state.persons.filter(p => p.name === this.state.newName)
+        const id = person[0].id
         const personObj = {
           name: this.state.newName,
           number: this.state.newNumber
         }
+
         personService
           .update(id, personObj)
           .then(response => {
-            this.setState({ persons: this.state.persons.concat(response)})
+            const index = this.state.persons.findIndex(p => p.id === response.id)
+            const copy = this.state.persons
+            copy.splice(index)
+            this.setState({ persons: copy.concat(response)})
           })
       }
     } else {
@@ -73,7 +78,7 @@ class App extends React.Component {
     const deletePerson = () => {
       const text = 'poistetaanko '.concat(props.person.name)
       if (window.confirm(text)) {
-        const url = 'http://localhost:3001/persons/'.concat(props.person.id)
+        const url = '/api/persons/'.concat(props.person.id)
       const copy = this.state.persons.filter(person => person.id !== props.person.id)
       axios.delete(url)
       .then(response => {
